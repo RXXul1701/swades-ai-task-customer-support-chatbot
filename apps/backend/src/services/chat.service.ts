@@ -1,6 +1,6 @@
 import { db, conversations, messages, NewMessage } from '@customer-support-ai/database';
 import { eq, desc } from 'drizzle-orm';
-import { invokeRouterAgent, AgentContext } from '@customer-support-ai/agents';
+import { invokeRouterAgent, handleCustomerSupportWorkflow, AgentContext } from '@customer-support-ai/agents';
 import { CoreMessage } from 'ai';
 
 export class ChatService {
@@ -67,6 +67,88 @@ export class ChatService {
             message: response.content,
             agentType: response.agentType,
             reasoning: response.reasoning,
+        };
+    }
+
+    /**
+     * Send a message using durable workflows for complex operations
+     */
+    async sendMessageWithWorkflow(data: {
+        conversationId?: string;
+        message: string;
+        userId?: string;
+        useWorkflow?: boolean;
+        workflowType?: 'order' | 'refund' | 'support';
+        entityId?: string;
+    }) {
+        // Create or get conversation
+        let convId = data.conversationId;
+
+        if (!convId) {
+            const [newConv] = await db.insert(conversations).values({
+                userId: data.userId || 'anonymous',
+                title: data.message.substring(0, 50), // First 50 chars as title
+            }).returning();
+            convId = newConv.id;
+        }
+
+        // Save user message
+        await db.insert(messages).values({
+            conversationId: convId,
+            role: 'user',
+            content: data.message,
+        });
+
+        let response;
+
+        if (data.useWorkflow && data.workflowType && data.entityId) {
+            // Use durable workflow for complex operations
+            response = await handleCustomerSupportWorkflow(
+                data.workflowType,
+                data.entityId,
+                data.userId || 'anonymous',
+                data.message
+            );
+        } else {
+            // Get conversation history for regular agent processing
+            const history = await db
+                .select()
+                .from(messages)
+                .where(eq(messages.conversationId, convId))
+                .orderBy(messages.createdAt);
+
+            // Convert to AI SDK format
+            const aiMessages: CoreMessage[] = history.map(msg => ({
+                role: msg.role as 'user' | 'assistant',
+                content: msg.content,
+            }));
+
+            // Invoke router agent
+            const agentContext = {
+                conversationId: convId,
+                messages: aiMessages,
+                userId: data.userId,
+            };
+
+            response = await invokeRouterAgent(agentContext);
+        }
+
+        // Save assistant response
+        await db.insert(messages).values({
+            conversationId: convId,
+            role: 'assistant',
+            content: response.content,
+            agentType: response.agentType,
+            reasoning: response.reasoning,
+            toolCalls: response.toolCalls as any,
+        });
+
+        return {
+            conversationId: convId,
+            message: response.content,
+            agentType: response.agentType,
+            reasoning: response.reasoning,
+            usedWorkflow: data.useWorkflow || false,
         };
     }
 

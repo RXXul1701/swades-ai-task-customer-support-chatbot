@@ -37,6 +37,8 @@ Be decisive and pick the most appropriate category based on keywords and context
 export async function invokeRouterAgent(
     context: AgentContext
 ): Promise<AgentResponse> {
+    "use workflow";
+
     try {
         // Get the latest user message
         const lastMessage = context.messages[context.messages.length - 1];

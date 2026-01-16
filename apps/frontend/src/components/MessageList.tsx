@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface Message {
     id: string;
@@ -16,10 +16,28 @@ interface MessageListProps {
 
 export const MessageList: React.FC<MessageListProps> = ({ messages, isTyping }) => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const [reasoningState, setReasoningState] = useState(0);
+
+    const reasoningStates = [
+        { text: 'Thinking...', icon: '🤔' },
+        { text: 'Searching...', icon: '🔍' },
+        { text: 'Analyzing...', icon: '🧠' },
+    ];
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, isTyping]);
+
+    useEffect(() => {
+        if (isTyping) {
+            const interval = setInterval(() => {
+                setReasoningState(prev => (prev + 1) % reasoningStates.length);
+            }, 2000);
+            return () => clearInterval(interval);
+        } else {
+            setReasoningState(0);
+        }
+    }, [isTyping]);
 
     const getAgentBadge = (agentType?: string) => {
         const badges: Record<string, { label: string; color: string }> = {
@@ -89,10 +107,14 @@ export const MessageList: React.FC<MessageListProps> = ({ messages, isTyping }) 
                         <div className="message-header">
                             <span className="assistant-label">AI Assistant</span>
                         </div>
-                        <div className="typing-indicator">
-                            <span></span>
-                            <span></span>
-                            <span></span>
+                        <div className="reasoning-indicator">
+                            <span className="reasoning-icon">{reasoningStates[reasoningState].icon}</span>
+                            <span className="reasoning-text">{reasoningStates[reasoningState].text}</span>
+                            <div className="typing-indicator">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
                         </div>
                     </div>
                 </div>

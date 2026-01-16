@@ -21,6 +21,8 @@ You have access to conversation history to provide context-aware responses. Alwa
 export async function invokeSupportAgent(
     context: AgentContext
 ): Promise<AgentResponse> {
+    "use workflow";
+
     try {
         const compactedMessages = contextManager.compactMessages(context.messages, SYSTEM_PROMPT);
 

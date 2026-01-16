@@ -4,6 +4,7 @@ export * from './support-agent';
 export * from './order-agent';
 export * from './billing-agent';
 export * from './context-manager';
+export * from './workflows';
 
 // Export capabilities
 export { routerAgentCapabilities } from './router';

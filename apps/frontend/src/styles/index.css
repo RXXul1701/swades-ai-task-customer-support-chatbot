@@ -384,6 +384,24 @@ body {
   }
 }
 
+/* Reasoning Indicator */
+.reasoning-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.reasoning-indicator .reasoning-icon {
+  font-size: 1rem;
+}
+
+.reasoning-indicator .reasoning-text {
+  flex: 1;
+}
+
 /* Chat Footer */
 .chat-footer {
   padding: var(--spacing-lg);

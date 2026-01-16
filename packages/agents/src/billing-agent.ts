@@ -29,6 +29,8 @@ Be empathetic, professional, and clear about billing policies.`;
 export async function invokeBillingAgent(
     context: AgentContext
 ): Promise<AgentResponse> {
+    "use workflow";
+
     try {
         const compactedMessages = contextManager.compactMessages(context.messages, SYSTEM_PROMPT);
 

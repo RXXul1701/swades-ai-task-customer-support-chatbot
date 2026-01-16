@@ -28,6 +28,8 @@ Be professional, efficient, and helpful.`;
 export async function invokeOrderAgent(
     context: AgentContext
 ): Promise<AgentResponse> {
+    "use workflow";
+
     try {
         const compactedMessages = contextManager.compactMessages(context.messages, SYSTEM_PROMPT);
 
