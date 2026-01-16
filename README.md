@@ -1,11 +1,6 @@
 # AI-Powered Customer Support System
 
 A fullstack multi-agent customer support system with intelligent query routing, specialized AI agents, and conversation persistence.
-
-![Project Status](https://img.shields.io/badge/status-active-success.svg)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
-
 ## 🌟 Features
 
 ### Core Features
