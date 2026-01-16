@@ -1,0 +1,30 @@
+{
+  "name": "customer-support-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-powered customer support system with multi-agent architecture",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "db:generate": "cd packages/database && npm run db:generate",
+    "db:migrate": "cd packages/database && npm run db:migrate",
+    "db:seed": "cd packages/database && npm run db:seed",
+    "db:studio": "cd packages/database && npm run db:studio"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "turbo": "^2.3.3"
+  },
+  "packageManager": "npm@10.2.3",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.1"
+  }
+}
